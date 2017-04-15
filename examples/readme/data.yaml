@@ -1,0 +1,13 @@
+me:
+  $suffix:
+    $suffix:
+      person:
+        name: foo
+        age: 20
+    suffix: +
+  suffix: +
+items:
+  $ntimes:
+    - x
+    - y
+  n: 3
