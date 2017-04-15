@@ -8,18 +8,13 @@ def suffix(d, suffix=":"):
 def ntimes(d, n=2):
     return list(it.chain.from_iterable(it.repeat(d, n)))
 
-if __name__ == "__main__":
-    import argparse
-    import sys
-    import zenmai
-    from dictknife import loading
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dst", default=None)
-    parser.add_argument("src", default=None)
 
-    args = parser.parse_args()
+if __name__ == "__main__":
+    import zenmai
+    import sys
+    from dictknife import loading
 
     loading.setup()  # xxx
-    d = loading.loadfile(args.src)
+    d = loading.loadfile(None)
     d = zenmai.compile(d, sys.modules[__name__])
-    loading.dumpfile(d, args.dst)
+    loading.dumpfile(d)
