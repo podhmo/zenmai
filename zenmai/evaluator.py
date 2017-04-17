@@ -1,9 +1,14 @@
 from collections import OrderedDict
+import keyword
+
+
+missing = object()
 
 
 class Evaluator:
     def __init__(self, m):
         self.m = m
+        self.accessor = Accessor(self)  # todo: reify
 
     def eval(self, d):
         if hasattr(d, "keys"):
@@ -16,15 +21,51 @@ class Evaluator:
                     method = k
                 else:
                     v = self.eval(d[k])
-                    kwargs[k] = v
+                    if v is not missing:
+                        kwargs[k] = v
             if method is None:
                 return kwargs
             return self.apply(method[1:], self.eval(d[method]), kwargs=kwargs)
         elif isinstance(d, (list, tuple)):
-            return [self.eval(x) for x in d]
+            r = []
+            has_missing = False
+            for x in d:
+                v = self.eval(x)
+                if v is missing:
+                    has_missing = True
+                else:
+                    r.append(v)
+            if has_missing and not r:
+                return missing
+            else:
+                return r
         else:
             return d
 
     def apply(self, name, d, kwargs):
-        method = getattr(self.m, name)
-        return method(d, **kwargs)
+        path = name.split(".")
+        method = self.m
+        for p in path[:-1]:
+            method = getattr(method, p)
+        method = getattr(method, self.accessor.normalize_name(path[-1]))
+        new_kwargs = {self.accessor.normalize_name(k): v for k, v in kwargs.items()}
+        new_kwargs.update(self.accessor.get_additionals(method))
+        r = method(d, **new_kwargs)
+        if r is None:
+            return missing
+        return r
+
+
+class Accessor(object):
+    def __init__(self, evaluator):
+        self.evaluator = evaluator
+
+    def get_additionals(self, method):
+        additionals = getattr(method, "additionals", [])
+        return [(name, getattr(self, name)) for name in additionals]
+
+    def normalize_name(self, name):
+        if keyword.iskeyword(name):
+            return name + "_"
+        else:
+            return name
