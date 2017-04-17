@@ -11,6 +11,7 @@ main.py
 .. code-block:: python
 
   import itertools as it
+  from zenmai.actions import import_
   
   
   def suffix(d, suffix=":"):
@@ -48,19 +49,26 @@ data.yaml
           name: foo
           age: 20
       suffix: +
-    suffix: +
+    suffix: "-"
   items:
     $ntimes:
       - x
       - y
     n: 3
+  main:
+    - $import: math
+  normalized:
+    ceil:
+      $math.ceil: 1.5
+    floor:
+      $math.floor: 1.5
 
 output
 
 .. code-block:: yaml
 
   me:
-    person++:
+    person+-:
       name: foo
       age: 20
   items:
@@ -70,5 +78,8 @@ output
   - y
   - x
   - y
+  normalized:
+    ceil: 2
+    floor: 1
   
 
