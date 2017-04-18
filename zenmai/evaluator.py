@@ -1,15 +1,21 @@
 from collections import OrderedDict
-from .utils import missing
 import keyword
+from .utils import missing
 
 
 class Evaluator:
-    def __init__(self, m):
+    def __init__(self, m, d, here=None):
         self.m = m
+        self.d = d
+        self.here = here
         self.accessor = Accessor(self)  # todo: reify
 
     def eval(self, d):
         if hasattr(d, "keys"):
+            if "$quote" in d:
+                assert len(d) == 1
+                return d["$quote"]  # xxx
+
             method = None
             kwargs = OrderedDict()
             for k in list(d.keys()):
@@ -23,7 +29,8 @@ class Evaluator:
                         kwargs[k] = v
             if method is None:
                 return kwargs
-            return self.eval(self.apply(method[1:], self.eval(d[method]), kwargs=kwargs))
+            r = self.apply(method[1:], self.eval(d[method]), kwargs=kwargs)
+            return self.eval(r)
         elif isinstance(d, (list, tuple)):
             r = []
             has_missing = False

@@ -1,9 +1,14 @@
 # -*- coding:utf-8 -*-
-import logging
 from zenmai.evaluator import Evaluator
-logger = logging.getLogger(__name__)
+from dictknife import loading
 
 
-def compile(d, module):
-    evalator = Evaluator(module)
+def compile(d, module, here=None):
+    evalator = Evaluator(module, d, here=here)
     return evalator.eval(d)
+
+
+def compilefile(module, filename):
+    loading.setup()
+    d = loading.loadfile(filename)
+    return compile(d, module, here=filename)
