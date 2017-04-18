@@ -37,6 +37,35 @@ class Tests(DiffTestCase):
         d = loading.loads(source)
         return compile(d, m)
 
+    def test_return_value_with_action(self):
+        class m:
+            @staticmethod
+            def inc(n):
+                return n + 1
+
+            @staticmethod
+            def inc2(n):
+                return {"$inc": n + 1}
+
+        source = textwrap.dedent("""
+        n:
+          $inc2: 10
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        n: 12
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
+
+class ActionsTests(DiffTestCase):
+    def _callFUT(self, source, m):
+        from zenmai import compile
+        d = loading.loads(source)
+        return compile(d, m)
+
     def test_import(self):
         class m:
             from zenmai.actions import import_  # NOQA
@@ -55,8 +84,8 @@ class Tests(DiffTestCase):
         d = self._callFUT(source, m)
         actual = loading.dumps(d)
         expected = textwrap.dedent("""
-definitions:
-  name+: foo
+        definitions:
+          name+: foo
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
@@ -78,7 +107,7 @@ definitions:
         d = self._callFUT(source, m)
         actual = loading.dumps(d)
         expected = textwrap.dedent("""
-definitions:
-  name+: foo
+        definitions:
+          name+: foo
         """)
         self.assertDiff(actual.strip(), expected.strip())

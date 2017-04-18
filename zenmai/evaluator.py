@@ -23,7 +23,7 @@ class Evaluator:
                         kwargs[k] = v
             if method is None:
                 return kwargs
-            return self.apply(method[1:], self.eval(d[method]), kwargs=kwargs)
+            return self.eval(self.apply(method[1:], self.eval(d[method]), kwargs=kwargs))
         elif isinstance(d, (list, tuple)):
             r = []
             has_missing = False
