@@ -54,7 +54,7 @@ def main():
 
     print("output")
     with block("yaml"):
-        cmd = "cat examples/readme/data.yaml | python examples/readme/main.py"
+        cmd = "make -C examples/readme"
         p = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE)
         for line in p.stdout.decode("utf-8").split("\n"):
             print(line)

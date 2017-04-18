@@ -9,9 +9,6 @@ from ..decorators import (
 @sideeffect
 def from_(s, import_, evaluator):
     """
-    $from: "foo.bar"
-    import: bar
-
     $from: "zenmai.actions.suffix"
     import: suffix
 

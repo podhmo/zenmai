@@ -80,6 +80,7 @@ output
 
 .. code-block:: yaml
 
+  cat ./data.yaml | python ./main.py
   me:
     person+-:
       name: foo
