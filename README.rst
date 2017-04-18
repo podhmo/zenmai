@@ -11,7 +11,7 @@ main.py
 .. code-block:: python
 
   import itertools as it
-  from zenmai.actions import import_
+  from zenmai.actions import import_  # NOQA
   
   
   def suffix(d, suffix=":"):
@@ -20,6 +20,14 @@ main.py
   
   def ntimes(d, n=2):
       return list(it.chain.from_iterable(it.repeat(d, n)))
+  
+  
+  def inc(n):
+      return n + 1
+  
+  
+  def inc2(n):
+      return {"$inc": n + 1}
   
   
   if __name__ == "__main__":
@@ -47,7 +55,8 @@ data.yaml
       $suffix:
         person:
           name: foo
-          age: 20
+          age:
+            $inc2: 20
       suffix: +
     suffix: "-"
   items:
@@ -70,7 +79,7 @@ output
   me:
     person+-:
       name: foo
-      age: 20
+      age: 22
   items:
   - x
   - y

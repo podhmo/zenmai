@@ -3,7 +3,8 @@ me:
     $suffix:
       person:
         name: foo
-        age: 20
+        age:
+          $inc2: 20
     suffix: +
   suffix: "-"
 items:
