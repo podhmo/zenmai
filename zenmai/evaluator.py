@@ -1,8 +1,6 @@
 from collections import OrderedDict
+from .utils import missing
 import keyword
-
-
-missing = object()
 
 
 class Evaluator:
@@ -50,10 +48,7 @@ class Evaluator:
         method = getattr(method, self.accessor.normalize_name(path[-1]))
         new_kwargs = {self.accessor.normalize_name(k): v for k, v in kwargs.items()}
         new_kwargs.update(self.accessor.get_additionals(method))
-        r = method(d, **new_kwargs)
-        if r is None:
-            return missing
-        return r
+        return method(d, **new_kwargs)
 
 
 class Accessor(object):

@@ -1,8 +1,12 @@
-from zenmai.decorators import with_evaluator
 from importlib import import_module
+from ..decorators import (
+    with_evaluator,
+    sideeffect,
+)
 
 
 @with_evaluator()
+@sideeffect
 def from_(s, import_, evaluator):
     """
     $from: "foo.bar"
