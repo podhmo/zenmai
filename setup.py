@@ -17,6 +17,7 @@ except IOError:
 
 install_requires = [
     "dictknife[load]",
+    "magicalimport",
 ]
 
 
@@ -52,5 +53,6 @@ setup(name='zenmai',
       tests_require=tests_require,
       test_suite="zenmai.tests",
       entry_points="""
+      [console_scripts]
+      zenmai=zenmai.cmd:main
 """)
-

@@ -1,0 +1,10 @@
+color:
+  cmyk:
+    - C
+    - M
+    - Y
+    - K
+  rgb:
+    - R
+    - G
+    - B
