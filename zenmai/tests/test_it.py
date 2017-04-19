@@ -112,6 +112,26 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_concat(self):
+        class m:
+            from zenmai.actions import concat  # NOQA
+
+        source = textwrap.dedent("""
+        person:
+          $concat:
+            - name: foo
+            - age: 10
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        person:
+          name: foo
+          age: 10
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_load(self):
         from tempfile import TemporaryDirectory
         from pathlib import Path
