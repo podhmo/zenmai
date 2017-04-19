@@ -1,6 +1,10 @@
 from collections import OrderedDict
 import keyword
-from .utils import missing
+from .utils import (
+    missing,
+    isquoted,
+    unquote,
+)
 
 
 class Evaluator:
@@ -12,9 +16,8 @@ class Evaluator:
 
     def eval(self, d):
         if hasattr(d, "keys"):
-            if "$quote" in d:
-                assert len(d) == 1
-                return d["$quote"]  # xxx
+            if isquoted(d):
+                return unquote(d)
 
             method = None
             kwargs = OrderedDict()

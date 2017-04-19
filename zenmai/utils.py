@@ -7,3 +7,16 @@ class Symbol(object):
 
 
 missing = Symbol("missing")
+
+
+def isquoted(d):
+    return "$quote" in d
+
+
+def quote(d):
+    return {"$quote": d}
+
+
+def unquote(d):
+    assert len(d) == 1
+    return d["$quote"]

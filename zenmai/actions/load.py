@@ -2,6 +2,7 @@ import logging
 from dictknife.jsonknife import get_resolver_from_filename
 from dictknife.jsonknife.accessor import StackedAccessor
 from ..decorators import with_evaluator
+from ..utils import quote
 
 
 logger = logging.getLogger(__name__)
@@ -39,4 +40,4 @@ def load(d, evaluator):
         return evaluator.eval(loaded)
 
     r = evaluator.loader.load(d, onload)
-    return {"$quote": r}  # xxx:
+    return quote(r)
