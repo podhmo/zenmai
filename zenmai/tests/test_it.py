@@ -61,10 +61,10 @@ class Tests(DiffTestCase):
 
 
 class ActionsTests(DiffTestCase):
-    def _callFUT(self, source, m):
+    def _callFUT(self, source, m, here=None):
         from zenmai import compile
         d = loading.loads(source)
-        return compile(d, m)
+        return compile(d, m, here=here)
 
     def test_import(self):
         class m:
@@ -111,3 +111,63 @@ class ActionsTests(DiffTestCase):
           name+: foo
         """)
         self.assertDiff(actual.strip(), expected.strip())
+
+    def test_load(self):
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+
+        with TemporaryDirectory() as d:
+            d = Path(d)
+
+            main = textwrap.dedent("""
+            definitions:
+              one:
+                $load: "./one/one.yaml"
+              two:
+                $load: "./two/two.yaml"
+            """)
+            loading.dumpfile(loading.loads(main), str(d.joinpath("./main.yaml")))
+
+            one = textwrap.dedent("""
+            type: object
+            properties:
+              value:
+                $load: "./value.yaml"
+            """)
+            loading.dumpfile(loading.loads(one), str(d.joinpath("./one/one.yaml")))
+
+            value = textwrap.dedent("""
+            description: value
+            type: integer
+            """)
+            loading.dumpfile(loading.loads(value), str(d.joinpath("./one/value.yaml")))
+
+            two = textwrap.dedent("""
+            type: object
+            properties:
+              value:
+                $load: "../one/value.yaml"
+            """)
+            loading.dumpfile(loading.loads(two), str(d.joinpath("./two/two.yaml")))
+
+            class m:
+                from zenmai.actions import load  # NOQA
+
+            d = self._callFUT(main, m, here=str(d.joinpath("./main.yaml")))
+            actual = loading.dumps(d)
+            expected = textwrap.dedent("""
+            definitions:
+              one:
+                type: object
+                properties:
+                  value:
+                    description: value
+                    type: integer
+              two:
+                type: object
+                properties:
+                  value:
+                    description: value
+                    type: integer
+            """)
+            self.assertDiff(actual.strip(), expected.strip())
