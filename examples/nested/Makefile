@@ -1,2 +1,2 @@
 default:
-	python main.py start.yaml
+	zenmai start.yaml

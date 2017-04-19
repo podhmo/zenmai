@@ -1,5 +1,5 @@
 default:
-	python main.py main.yaml
+	zenmai main.yaml
 
 default2:
-	python main.py main2.yaml
+	zenmai main2.yaml
