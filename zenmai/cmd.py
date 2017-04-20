@@ -1,7 +1,7 @@
 import sys
 import argparse
 import logging
-import magicalimport
+from zenmai.langhelpers import import_module, import_symbol
 
 
 def main():
@@ -17,11 +17,8 @@ def main():
     if ":" not in driver_cls:
         driver_cls = "swagger_marshmallow_codegen.driver:{}".format(driver_cls)
 
-    if args.module.endswith(".py"):
-        module = magicalimport.import_from_physical_path(args.module)
-    else:
-        module = magicalimport.import_module(args.module)
-    driver = magicalimport.import_symbol(driver_cls)(module, args.file, format=args.format)
+    module = import_module(args.module)
+    driver = import_symbol(driver_cls)(module, args.file, format=args.format)
 
     # todo: option
     logging.basicConfig(

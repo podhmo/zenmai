@@ -89,6 +89,23 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_import_with_physical_path(self):
+        class m:
+            from zenmai.actions import import_  # NOQA
+
+        source = textwrap.dedent("""
+        main:
+          {$import: ./_inc.py, as: f}
+
+        n: {$f.inc: 10}
+        """)
+        d = self._callFUT(source, m, filename=__file__)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        n: 11
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_from(self):
         class m:
             from zenmai.actions import from_  # NOQA
@@ -109,6 +126,23 @@ class ActionsTests(DiffTestCase):
         expected = textwrap.dedent("""
         definitions:
           name+: foo
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
+    def test_from_with_physical_path(self):
+        class m:
+            from zenmai.actions import from_  # NOQA
+
+        source = textwrap.dedent("""
+        main:
+          {$from: ./_inc.py, import: inc}
+
+        n: {$inc: 10}
+        """)
+        d = self._callFUT(source, m, filename=__file__)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        n: 11
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
