@@ -61,10 +61,10 @@ class Tests(DiffTestCase):
 
 
 class ActionsTests(DiffTestCase):
-    def _callFUT(self, source, m, here=None):
+    def _callFUT(self, source, m, filename=None):
         from zenmai import compile
         d = loading.loads(source)
-        return compile(d, m, here=here)
+        return compile(d, m, filename=filename)
 
     def test_import(self):
         class m:
@@ -173,7 +173,7 @@ class ActionsTests(DiffTestCase):
             class m:
                 from zenmai.actions import load  # NOQA
 
-            d = self._callFUT(main, m, here=str(d.joinpath("./main.yaml")))
+            d = self._callFUT(main, m, filename=str(d.joinpath("./main.yaml")))
             actual = loading.dumps(d)
             expected = textwrap.dedent("""
             definitions:

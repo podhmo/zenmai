@@ -1,13 +1,13 @@
 from importlib import import_module
 from ..decorators import (
-    with_evaluator,
+    with_context,
     sideeffect,
 )
 
 
-@with_evaluator()
+@with_context
 @sideeffect
-def from_(s, import_, evaluator):
+def from_(s, import_, context):
     """
     $from: "zenmai.actions.suffix"
     import: suffix
@@ -21,4 +21,4 @@ def from_(s, import_, evaluator):
         names = [names]
     for name in names:
         member = getattr(imported, name)
-        setattr(evaluator.m, name, member)
+        context.assign(name, member)

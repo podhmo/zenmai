@@ -1,13 +1,13 @@
 from importlib import import_module
 from ..decorators import (
-    with_evaluator,
+    with_context,
     sideeffect,
 )
 
 
-@with_evaluator()
+@with_context
 @sideeffect
-def import_(s, evaluator, as_=None):
+def import_(s, context, as_=None):
     """
     $import: "zenmai.actions.suffix"
     as: s
@@ -17,4 +17,4 @@ def import_(s, evaluator, as_=None):
     """
     imported = import_module(s)
     as_ = as_ or s.split(".")[0]
-    setattr(evaluator.m, as_, imported)
+    context.assign(as_, imported)

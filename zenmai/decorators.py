@@ -1,14 +1,17 @@
 from .utils import missing
 
 
-def with_evaluator(attr="evaluator"):
-    def _with_evaluator(fn):
+def with_additional(attr):
+    def _with_additional(fn):
         if not hasattr(fn, "additionals"):
             fn.additionals = []
         fn.additionals.append(attr)
         return fn
 
-    return _with_evaluator
+    return _with_additional
+
+
+with_context = with_additional("context")
 
 
 def sideeffect(fn):

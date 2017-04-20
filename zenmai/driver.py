@@ -9,7 +9,7 @@ class Driver:
         self.format = format
 
     def transform(self, d):
-        return zenmai.compile(d, self.module, here=self.srcfile)
+        return zenmai.compile(d, self.module, filename=self.srcfile)
 
     def load(self, fp):
         return loading.load(fp)

@@ -1,43 +1,15 @@
-import logging
-from dictknife.jsonknife import get_resolver_from_filename
-from dictknife.jsonknife.accessor import StackedAccessor
-from ..decorators import with_evaluator
+from ..decorators import with_context
 from ..utils import quote
 
 
-logger = logging.getLogger(__name__)
-
-
-class Loader(object):
-    def __init__(self, rootfile, doc):
-        self.resolver = get_resolver_from_filename(rootfile, doc=doc)
-        self.accessor = StackedAccessor(self.resolver)
-
-    @property
-    def data(self):
-        return self.resolver.doc
-
-    def load(self, ref, callback):
-        try:
-            loaded = self.accessor.access(ref)
-            filename = self.accessor.resolver.filename
-            logger.debug("@push load stack %s%s", " " * len(self.accessor.stack), self.accessor.resolver.rawfilename)
-            return callback(filename, loaded)
-        finally:
-            resolver = self.accessor.pop_stack()
-            logger.debug("@pop  load stack %s%s", " " * len(self.accessor.stack), resolver.rawfilename)
-
-
-@with_evaluator()
-def load(d, evaluator):
+@with_context
+def load(d, context):
     """
     $load: "./a.yaml#/a"
     """
-    if not hasattr(evaluator, "loader"):  # xxx:
-        evaluator.loader = Loader(evaluator.here, evaluator.d)
-
     def onload(filename, loaded):
-        return evaluator.eval(loaded)
+        subcontext = context.new_child(filename)
+        return context.evaluator.eval(subcontext, loaded)
 
-    r = evaluator.loader.load(d, onload)
+    r = context.loader.load(d, onload)
     return quote(r)
