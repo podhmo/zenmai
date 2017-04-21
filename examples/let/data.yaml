@@ -1,0 +1,12 @@
+$let:
+  withPlus:
+    {$partial: $prefix, prefix: +}
+person:
+  name: {$withPlus: foo}
+  age:
+    $let:
+      withPlus: {$partial: $add, v: 10}
+    body:
+      $withPlus: 10
+friends:
+  - name: {$withPlus: bar}
