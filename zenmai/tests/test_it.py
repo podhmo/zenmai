@@ -225,3 +225,64 @@ class ActionsTests(DiffTestCase):
                     type: integer
             """)
             self.assertDiff(actual.strip(), expected.strip())
+
+
+class SpecialSyntaxTests(DiffTestCase):
+    def _callFUT(self, source, m, filename=None):
+        from zenmai import compile
+        d = loading.loads(source)
+        return compile(d, m, filename=filename)
+
+    def test_let_syntax(self):
+        class m:
+            from zenmai.actions import partial  # NOQA
+            prefix = staticmethod(lambda d, prefix=":": prefix + d)
+
+        source = textwrap.dedent("""
+        $let:
+          withPlus:
+            {$partial: $prefix, prefix: +}
+        body:
+          definitions:
+            name: {$withPlus: foo}
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        definitions:
+          name: +foo
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
+    def test_let_syntax_with_scope(self):
+        class m:
+            from zenmai.actions import partial  # NOQA
+            prefix = staticmethod(lambda d, prefix=":": prefix + d)
+            add = staticmethod(lambda n, v=1: n + v)
+
+        source = textwrap.dedent("""
+        $let:
+          withPlus:
+            {$partial: $prefix, prefix: +}
+        person:
+          name: {$withPlus: foo}
+          age:
+            $let:
+              withPlus: {$partial: $add, v: 10}
+            body:
+              $withPlus: 10
+        friends:
+          - name: {$withPlus: bar}
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        person:
+          name: +foo
+          age: 20
+        friends:
+        - name: +bar
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
