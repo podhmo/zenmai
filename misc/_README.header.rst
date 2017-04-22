@@ -6,3 +6,6 @@ zenmai
 
 
 toylang on yaml or json
+
+- code example
+- command line example

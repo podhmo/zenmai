@@ -1,0 +1,14 @@
+code:
+  $import: ./filters.py
+  as: f
+definitions:
+  $let:
+    nums: {$load: ./nums.yaml#/definitions/nums0/enum}
+  odds:
+    type: integer
+    enum:
+      $f.odds: {$get: nums}
+  even:
+    type: integer
+    enum:
+      $f.evens: {$get: nums}
