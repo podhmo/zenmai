@@ -226,6 +226,44 @@ class ActionsTests(DiffTestCase):
             """)
             self.assertDiff(actual.strip(), expected.strip())
 
+    def test_load__with_kwargs(self):
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+
+        with TemporaryDirectory() as d:
+            d = Path(d)
+
+            a = textwrap.dedent("""
+            b:
+              $let:
+                mydata: {value: 10}
+              body:
+                $load:  ./b.yaml
+                data: {$get: mydata}
+            """)
+            loading.dumpfile(loading.loads(a), str(d.joinpath("./a.yaml")))
+
+            b = textwrap.dedent("""
+            # need: data
+            name: b
+            data: {$get: data}
+            """)
+            loading.dumpfile(loading.loads(b), str(d.joinpath("./b.yaml")))
+
+            class m:
+                from zenmai.actions import get  # NOQA
+                from zenmai.actions import load  # NOQA
+
+            d = self._callFUT(a, m, filename=str(d.joinpath("./a.yaml")))
+            actual = loading.dumps(d)
+            expected = textwrap.dedent("""
+            b:
+              name: b
+              data:
+                value: 10
+            """)
+            self.assertDiff(actual.strip(), expected.strip())
+
     def test_jinja2(self):
         class m:
             from zenmai.actions import jinja2_template  # NOQA
