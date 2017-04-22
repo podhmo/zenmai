@@ -18,6 +18,7 @@ except IOError:
 install_requires = [
     "dictknife[load]",
     "magicalimport",
+    "jinja2",
 ]
 
 

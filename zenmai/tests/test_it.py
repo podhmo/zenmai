@@ -226,6 +226,35 @@ class ActionsTests(DiffTestCase):
             """)
             self.assertDiff(actual.strip(), expected.strip())
 
+    def test_jinja2(self):
+        class m:
+            from zenmai.actions import jinja2_template  # NOQA
+
+        source = textwrap.dedent("""
+        $let:
+          item-template:
+            $jinja2_template: |
+              items:
+                {% for i in nums %}
+                - {{prefix|default("no")}}.{{i}}
+                {% endfor %}
+        body:
+          listing:
+            $item-template:
+              nums: [1,2,3]
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        listing:
+          items:
+          - no.1
+          - no.2
+          - no.3
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
 
 class SpecialSyntaxTests(DiffTestCase):
     def _callFUT(self, source, m, filename=None):
