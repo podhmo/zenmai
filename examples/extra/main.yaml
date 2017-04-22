@@ -1,0 +1,4 @@
+# need: name, password
+oauth:
+  token: {$get: "data#/token"}
+  secret: {$get: "data#/secret"}

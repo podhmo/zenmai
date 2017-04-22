@@ -5,10 +5,10 @@ from zenmai.core.loader import Loader
 from dictknife import loading
 
 
-def compile(d, module, filename=None):
-    evalator = Evaluator()
-    loader = Loader(d, rootfile=filename)
-    context = Context(module, loader, evalator, filename=filename)
+def compile(d, module, filename=None, evaluator_factory=Evaluator, loader_factory=Loader, context_factory=Context):
+    evalator = evaluator_factory()
+    loader = loader_factory(d, rootfile=filename)
+    context = context_factory(module, loader, evalator, filename=filename)
     return evalator.eval(context, d)
 
 
