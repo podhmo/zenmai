@@ -22,7 +22,7 @@ def main():
         driver_cls = "swagger_marshmallow_codegen.driver:{}".format(driver_cls)
 
     module = import_module(args.module)
-    data = [loading.loadfile(path) for path in args.data]
+    data = [loading.loadfile(path) for path in args.data or []]
     driver = import_symbol(driver_cls)(module, args.file, format=args.format, data=data)
 
     # todo: option
