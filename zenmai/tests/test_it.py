@@ -166,6 +166,31 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_counter(self):
+        class m:
+            from zenmai.actions import counter  # NOQA
+
+        source = textwrap.dedent("""
+        $let:
+          c0: {$counter: 3}
+          c1: {$counter: 0}
+        body:
+          - {$c0: "item{:04}"}
+          - {$c1}
+          - {$c0: "item{:04}"}
+          - {$c1}
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        - item0003
+        - 0
+        - item0004
+        - 1
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_load(self):
         from tempfile import TemporaryDirectory
         from pathlib import Path
