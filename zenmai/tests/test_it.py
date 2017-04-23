@@ -191,6 +191,31 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_format(self):
+        class m:
+            from zenmai.actions import format  # NOQA
+
+        source = textwrap.dedent("""
+        - $format: "{prefix}{number:04}"
+          prefix: foo
+          number: 0
+        - $format: "{prefix}{number:04}"
+          prefix: foo
+          number: 1
+        - $format: "{prefix}{number:04}"
+          prefix: bar
+          number: 0
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        - foo0000
+        - foo0001
+        - bar0000
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_load(self):
         from tempfile import TemporaryDirectory
         from pathlib import Path

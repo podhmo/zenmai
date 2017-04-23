@@ -5,6 +5,7 @@ from .concat import concat  # NOQA
 from .partial import partial  # NOQA
 from .get import get  # NOQA
 from .counter import counter  # NOQA
+from .format import format  # NOQA
 from .dynamic import dynamic  # NOQA
 from .jinja2 import jinja2_template  # NOQA
 from .suffix import suffix  # NOQA
