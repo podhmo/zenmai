@@ -216,6 +216,29 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_get(self):
+        class m:
+            from zenmai.actions import get  # NOQA
+
+        source = textwrap.dedent("""
+        $let:
+          person:
+            name: foo
+        body:
+          - {$get: person}
+          - {$get: "person#/name"}
+          - {$get: "person#/age", default: 0}
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        - name: foo
+        - foo
+        - 0
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_load(self):
         from tempfile import TemporaryDirectory
         from pathlib import Path
