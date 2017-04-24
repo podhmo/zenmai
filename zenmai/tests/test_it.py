@@ -191,6 +191,29 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_get(self):
+        class m:
+            from zenmai.actions import get  # NOQA
+
+        source = textwrap.dedent("""
+        $let:
+          person:
+            name: foo
+        body:
+          - {$get: person}
+          - {$get: "person#/name"}
+          - {$get: "person#/age", default: 0}
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        - name: foo
+        - foo
+        - 0
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_format(self):
         class m:
             from zenmai.actions import format  # NOQA
@@ -216,26 +239,26 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
-    def test_get(self):
+    def test_format2(self):
         class m:
+            from zenmai.actions import format  # NOQA
             from zenmai.actions import get  # NOQA
 
         source = textwrap.dedent("""
         $let:
-          person:
-            name: foo
+          items:
+            app: "{prefix}-app"
+            batch: "{prefix}-batch"
         body:
-          - {$get: person}
-          - {$get: "person#/name"}
-          - {$get: "person#/age", default: 0}
+          $format: {$get: items}
+          prefix: dev
         """)
 
         d = self._callFUT(source, m)
         actual = loading.dumps(d)
         expected = textwrap.dedent("""
-        - name: foo
-        - foo
-        - 0
+        app: dev-app
+        batch: dev-batch
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
