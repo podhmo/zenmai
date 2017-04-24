@@ -2,7 +2,17 @@ import sys
 import argparse
 import logging
 from dictknife import loading
+from dictknife.jsonknife.accessor import access_by_json_pointer
 from zenmai.langhelpers import import_module, import_symbol
+
+
+def loadfile_with_jsonref(ref):
+    if "#/" not in ref:
+        return loading.loadfile(ref)
+
+    filename, query = ref.split("#")
+    doc = loading.loadfile(filename)
+    return access_by_json_pointer(doc, query)
 
 
 def main():
@@ -22,7 +32,7 @@ def main():
         driver_cls = "swagger_marshmallow_codegen.driver:{}".format(driver_cls)
 
     module = import_module(args.module)
-    data = [loading.loadfile(path) for path in args.data or []]
+    data = [loadfile_with_jsonref(path) for path in args.data or []]
     driver = import_symbol(driver_cls)(module, args.file, format=args.format, data=data)
 
     # todo: option
