@@ -396,6 +396,68 @@ class SpecialSyntaxTests(DiffTestCase):
         d = loading.loads(source)
         return compile(d, m, filename=filename)
 
+    def test_when_syntax(self):
+        class m:
+            pass
+
+        source = textwrap.dedent("""
+        ok0:
+          $when: true
+          body: ok
+        ng0:
+          $when: false
+          body: ng
+        ok1:
+          $when: true
+          body:
+            message: ok
+        ok2:
+          $when: true
+          message: ok
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        ok0: ok
+        ok1:
+          message: ok
+        ok2:
+          message: ok
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
+    def test_unless_syntax(self):
+        class m:
+            pass
+
+        source = textwrap.dedent("""
+        ok0:
+          $unless: false
+          body: ok
+        ng0:
+          $unless: true
+          body: ng
+        ok1:
+          $unless: false
+          body:
+            message: ok
+        ok2:
+          $unless: false
+          message: ok
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        ok0: ok
+        ok1:
+          message: ok
+        ok2:
+          message: ok
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_let_syntax(self):
         class m:
             from zenmai.actions import partial  # NOQA

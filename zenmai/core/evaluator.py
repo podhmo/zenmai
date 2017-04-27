@@ -30,11 +30,18 @@ class Evaluator:
                 ks.append(k)
         if method is None:
             return self._eval_args(context, d, ks)
-        elif method == "$let":
-            return self.eval_let_syntax(context, d, ks)
+        elif self.has_special_syntax(method):
+            return self.eval_special_syntax(context, method, d, ks)
         else:
             kwargs = self._eval_args(context, d, ks)
             return self.eval_action(context, method, d, kwargs)
+
+    def has_special_syntax(self, method):
+        return hasattr(self, "eval_{}_syntax".format(method[1:]))
+
+    def eval_special_syntax(self, context, method, d, ks):
+        eval_syntax = getattr(self, "eval_{}_syntax".format(method[1:]))
+        return eval_syntax(context, d, ks)
 
     def eval_list(self, context, xs):
         r = []
@@ -60,6 +67,32 @@ class Evaluator:
         r = action(sd, **new_kwargs)
         return self.eval(context, r)
 
+    def eval_when_syntax(self, context, d, ks):
+        """
+        $when: <predicate>
+        body:
+          <body>
+
+        or
+
+        $when: <predicate>
+        <body>
+        """
+        predicate = d.pop("$when")
+        if self.eval(context, predicate):
+            body = d["body"] if "body" in ks else d
+            return self.eval(context, body)
+        else:
+            return missing
+
+    def eval_unless_syntax(self, context, d, ks):
+        predicate = d.pop("$unless")
+        if not self.eval(context, predicate):
+            body = d["body"] if "body" in ks else d
+            return self.eval(context, body)
+        else:
+            return missing
+
     def eval_let_syntax(self, context, d, ks):
         """
         $let:
@@ -81,10 +114,8 @@ class Evaluator:
         subcontext = context.new_child(context.filename)
         for k, v in bindings.items():
             subcontext.assign(k, self.eval(context, v))
-        if "body" in ks:
-            return self.eval(subcontext, d["body"])
-        else:
-            return self.eval(subcontext, d)
+        body = d["body"] if "body" in ks else d
+        return self.eval(subcontext, body)
 
     def _eval_args(self, context, d, ks):
         kwargs = OrderedDict()
