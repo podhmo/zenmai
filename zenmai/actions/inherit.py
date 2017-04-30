@@ -1,7 +1,7 @@
 from dictknife.jsonknife.accessor import access_by_json_pointer
+from dictknife import deepmerge
 from zenmai.decorators import with_context
 from zenmai.utils import unquote
-from .concat import concat
 from .load import load
 
 
@@ -12,4 +12,4 @@ def inherit(ref, context, **kwargs):
         parent = access_by_json_pointer(data, ref[1:])
     else:
         parent = unquote(load(ref, context))
-    return concat([parent, kwargs])
+    return deepmerge(parent, kwargs, override=True)
