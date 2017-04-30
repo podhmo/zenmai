@@ -19,8 +19,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--module", default="zenmai.actions")
     parser.add_argument("--driver", default="zenmai.driver:Driver")
-    parser.add_argument("--logging", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
-    parser.add_argument("-f", "--format", default=None, choices=["yaml", "json"])
+    parser.add_argument("--logging", default="INFO", choices=list(logging._nameToLevel.keys()))
+    parser.add_argument("-f", "--format", default=None, choices=loading.get_formats())
     parser.add_argument("--data", action="append")
     parser.add_argument("file", default=None)
 
