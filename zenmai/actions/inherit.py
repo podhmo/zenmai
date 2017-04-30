@@ -8,8 +8,8 @@ from .load import load
 @with_context
 def inherit(ref, context, **kwargs):
     data = context.loader.data
-    if "#/" not in ref:
-        parent = access_by_json_pointer(data, ref)
+    if ref.startswith("#/"):
+        parent = access_by_json_pointer(data, ref[1:])
     else:
         parent = unquote(load(ref, context))
     return concat([parent, kwargs])
