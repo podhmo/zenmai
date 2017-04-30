@@ -10,12 +10,15 @@ class Driver:
         self.format = format
         self.data = data or []
 
-    def transform(self, d):
+    def transform(self, d, wrap=None):
         def context_factory(*args, **kwargs):
             context = zenmai.Context(*args, **kwargs)
             context.assign("data", concat(self.data))  # xxx
             return context
-        return zenmai.compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
+        r = zenmai.compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
+        if wrap is not None:
+            r = wrap(r)
+        return r
 
     def load(self, fp):
         return loading.load(fp)
@@ -23,7 +26,7 @@ class Driver:
     def dump(self, d, fp):
         return loading.dump(d, fp, format=self.format)
 
-    def run(self, inp, outp):
+    def run(self, inp, outp, wrap=None):
         data = self.load(inp)
-        result = self.transform(data)
+        result = self.transform(data, wrap=wrap)
         self.dump(result, outp)

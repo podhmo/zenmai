@@ -22,18 +22,26 @@ def main():
     parser.add_argument("--logging", default="INFO", choices=list(logging._nameToLevel.keys()))
     parser.add_argument("-f", "--format", default=None, choices=loading.get_formats())
     parser.add_argument("--data", action="append")
+    parser.add_argument("--select", default=None)
     parser.add_argument("file", default=None)
 
     loading.setup()  # xxx:
     args = parser.parse_args()
 
-    driver_cls = args.driver
-    if ":" not in driver_cls:
-        driver_cls = "swagger_marshmallow_codegen.driver:{}".format(driver_cls)
+    driver_cls_path = args.driver
+    if ":" not in driver_cls_path:
+        driver_cls_path = "swagger_marshmallow_codegen.driver:{}".format(driver_cls_path)
+    driver_cls = import_symbol(driver_cls_path)
 
     module = import_module(args.module)
     data = [loadfile_with_jsonref(path) for path in args.data or []]
-    driver = import_symbol(driver_cls)(module, args.file, format=args.format, data=data)
+
+    def wrap(d):
+        if args.select is None:
+            return d
+        return access_by_json_pointer(d, args.select.split("#")[-1])
+
+    driver = driver_cls(module, args.file, format=args.format, data=data)
 
     # todo: option
     logging.basicConfig(
@@ -41,7 +49,7 @@ def main():
         level=logging._nameToLevel[args.logging]
     )
     if args.file is None:
-        driver.run(sys.stdin, sys.stdout)
+        driver.run(sys.stdin, sys.stdout, wrap=wrap)
     else:
         with open(args.file) as rf:
-            driver.run(rf, sys.stdout)
+            driver.run(rf, sys.stdout, wrap=wrap)
