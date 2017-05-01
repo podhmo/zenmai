@@ -2,7 +2,7 @@ import jinja2
 from dictknife import loading
 
 
-def jinja2_template(template, format="yaml", load=loading.loads):
+def jinja2_template(template, format=None, load=loading.loads):
     t = jinja2.Template(template, undefined=jinja2.StrictUndefined)
 
     def render(kwargs):

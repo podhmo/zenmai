@@ -15,9 +15,9 @@ class Loader(object):
     def data(self):
         return self.resolver.doc
 
-    def load(self, ref, callback):
+    def load(self, ref, callback, format=None):
         try:
-            loaded = self.accessor.access(ref)
+            loaded = self.accessor.access(ref, format=format)
             filename = self.accessor.resolver.filename
             logger.debug("@push load stack %s%s", " " * len(self.accessor.stack), self.accessor.resolver.rawfilename)
             return callback(filename, loaded)

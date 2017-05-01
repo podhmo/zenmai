@@ -389,6 +389,90 @@ class ActionsTests(DiffTestCase):
         """)
         self.assertDiff(actual.strip(), expected.strip())
 
+    def test_jinja2_raw_format(self):
+        from tempfile import TemporaryDirectory
+        from pathlib import Path
+
+        class m:
+            from zenmai.actions import jinja2_template  # NOQA
+            from zenmai.actions import load  # NOQA
+
+        with TemporaryDirectory() as d:
+            d = Path(d)
+
+            main = textwrap.dedent("""
+            $let:
+              readme-template:
+                $jinja2_template:
+                  $load: ./readme.jinja2
+                  format: raw
+                format: raw
+            body:
+              ./one.md:
+                $readme-template:
+                  name: one
+              ./two.md:
+                $readme-template:
+                  name: two
+              ./three.md:
+                $readme-template:
+                  name: three
+            """)
+            loading.dumpfile(loading.loads(main), str(d.joinpath("./main.yaml")))
+
+            template = textwrap.dedent("""
+            # {{name}}
+            this is {{name}}.
+            """)
+            with open(str(d.joinpath("./readme.jinja2")), "w") as wf:
+                wf.write(template)
+
+            d = self._callFUT(main, m, filename=str(d.joinpath("./main.yaml")))
+            actual = loading.dumps(d)
+            expected = textwrap.dedent("""
+            ./one.md: '
+
+              # one
+
+              this is one.'
+            ./two.md: '
+
+              # two
+
+              this is two.'
+            ./three.md: '
+
+              # three
+
+              this is three.'
+            """)
+            self.assertDiff(actual.strip(), expected.strip())
+
+        source = textwrap.dedent("""
+        $let:
+          item-template:
+            $jinja2_template: |
+              items:
+                {% for i in nums %}
+                - {{prefix|default("no")}}.{{i}}
+                {% endfor %}
+        body:
+          listing:
+            $item-template:
+              nums: [1,2,3]
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        listing:
+          items:
+          - no.1
+          - no.2
+          - no.3
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
 
 class SpecialSyntaxTests(DiffTestCase):
     def _callFUT(self, source, m, filename=None):
