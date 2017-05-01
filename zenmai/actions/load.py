@@ -7,8 +7,20 @@ def load(d, context, format=None, **bindings):
     """
     $load: "./a.yaml#/a"
     """
+    return _load(d, context, bindings=bindings, dynamicscope=False, format=format)
+
+
+@with_context
+def load_with_dynamicscope(d, context, format=None, **bindings):
+    return _load(d, context, bindings=bindings, dynamicscope=True, format=format)
+
+
+def _load(d, context, bindings, dynamicscope=False, format=None):
     def onload(filename, loaded):
-        subcontext = context.new_child(filename)
+        if dynamicscope:
+            subcontext = context.new_child(filename)
+        else:
+            subcontext = context.new_child(filename, scope=context.rootscope)
         for k, v in bindings.items():
             subcontext.assign(k, v)
         return context.evaluator.eval(subcontext, loaded)

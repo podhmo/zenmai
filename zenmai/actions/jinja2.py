@@ -1,6 +1,8 @@
 import jinja2
+import logging
 from dictknife import loading
 from zenmai.decorators import with_context
+logger = logging.getLogger(__name__)
 
 
 def jinja2_template(template, format=None, load=loading.loads):
@@ -8,6 +10,7 @@ def jinja2_template(template, format=None, load=loading.loads):
 
     def render(kwargs):
         s = t.render(**kwargs)
+        logger.debug("template: %s", s)
         return load(s, format=format)
     return render
 

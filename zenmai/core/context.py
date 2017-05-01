@@ -9,8 +9,16 @@ class Context(object):
         self.evaluator = evaluator
         self.filename = filename
 
-    def new_child(self, filename):
-        return self.__class__(self.scope, self.loader, self.evaluator, filename=filename)
+    def new_child(self, filename, scope=None):
+        scope = scope or self.scope
+        return self.__class__(scope, self.loader, self.evaluator, filename=filename)
+
+    @property
+    def rootscope(self):
+        if hasattr(self.scope, "get_rootscope"):
+            return self.scope.get_rootscope()
+        else:
+            return self.scope
 
     def assign(self, name, value):
         setattr(self.scope, name, value)
@@ -22,6 +30,15 @@ class Scope(object):
 
     def __getattr__(self, name):
         return getattr(self.parent, name)
+
+    def get_rootscope(self):
+        if self.parent is None:
+            return self
+
+        if hasattr(self.parent, "get_rootscope"):
+            return self.parent.get_rootscope()
+        else:
+            return self.parent
 
 
 class Accessor(object):
