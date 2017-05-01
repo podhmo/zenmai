@@ -396,6 +396,41 @@ class SpecialSyntaxTests(DiffTestCase):
         d = loading.loads(source)
         return compile(d, m, filename=filename)
 
+    def test_quote_syntax(self):
+        class m:
+            pass
+
+        source = textwrap.dedent("""
+        body:
+          $quote:
+            $load:  foo.yaml
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        body:
+          $load: foo.yaml
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
+    def test_quote_syntax2(self):
+        class m:
+            pass
+
+        source = textwrap.dedent("""
+        body:
+          $$load:  foo.yaml
+        """)
+
+        d = self._callFUT(source, m)
+        actual = loading.dumps(d)
+        expected = textwrap.dedent("""
+        body:
+          $load: foo.yaml
+        """)
+        self.assertDiff(actual.strip(), expected.strip())
+
     def test_when_syntax(self):
         class m:
             pass

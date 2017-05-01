@@ -22,7 +22,9 @@ class Evaluator:
         method = None
         ks = []
         for k in list(d.keys()):
-            if k.startswith("$"):
+            if k.startswith("$$"):
+                ks.append(k)  # quoted
+            elif k.startswith("$"):
                 if method is not None:
                     raise RuntimeError("conflicted: {!r} and {!r}".format(method, k))
                 method = k
@@ -120,7 +122,10 @@ class Evaluator:
     def _eval_args(self, context, d, ks):
         kwargs = OrderedDict()
         for k in ks:
-            v = self.eval(context, d[k])
-            if v is not missing:
-                kwargs[k] = v
+            if k.startswith("$$"):
+                kwargs[k[1:]] = d[k]
+            else:
+                v = self.eval(context, d[k])
+                if v is not missing:
+                    kwargs[k] = v
         return kwargs
