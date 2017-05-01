@@ -10,6 +10,7 @@ def inherit(ref, context, **kwargs):
     data = context.loader.data
     if ref.startswith("#/"):
         parent = access_by_json_pointer(data, ref[1:])
+        parent = context.evaluator.eval(context, parent)
     else:
         parent = unquote(load(ref, context))
     return quote(deepmerge(parent, kwargs, override=True))
