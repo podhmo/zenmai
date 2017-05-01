@@ -1,5 +1,6 @@
 import jinja2
 from dictknife import loading
+from zenmai.decorators import with_context
 
 
 def jinja2_template(template, format=None, load=loading.loads):
@@ -9,3 +10,9 @@ def jinja2_template(template, format=None, load=loading.loads):
         s = t.render(**kwargs)
         return load(s, format=format)
     return render
+
+
+@with_context
+def jinja2_templatefile(filename, context, format=None, load=loading.loads):
+    template = context.loader.load(filename, format="raw")
+    return jinja2_template(template, format=format, load=load)

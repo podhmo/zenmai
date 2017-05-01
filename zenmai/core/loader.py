@@ -16,12 +16,18 @@ class Loader(object):
     def data(self):
         return self.resolver.doc
 
-    def load(self, ref, callback, format=None):
+    @property
+    def filename(self):
+        return self.accessor.resolver.filename
+
+    def load(self, ref, callback=None, format=None):
         try:
             loaded = copy.deepcopy(self.accessor.access(ref, format=format))
             filename = self.accessor.resolver.filename
             logger.debug("@push load stack %s%s", " " * len(self.accessor.stack), self.accessor.resolver.rawfilename)
-            return callback(filename, loaded)
+            if callback is not None:
+                loaded = callback(filename, loaded)
+            return loaded
         finally:
             resolver = self.accessor.pop_stack()
             logger.debug("@pop  load stack %s%s", " " * len(self.accessor.stack), resolver.rawfilename)
