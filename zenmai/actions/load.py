@@ -1,5 +1,5 @@
-from ..decorators import with_context
-from ..utils import quote
+from zenmai.decorators import with_context
+from zenmai.utils import quote
 
 
 @with_context
