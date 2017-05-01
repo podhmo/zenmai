@@ -3,9 +3,10 @@ config loader
 
 using zenmai as config loader.
 
-```python
-from zenma.loader import load
+.. code-block:: python
 
-with open("config.yaml") as rf:
-    d = load(rf)
-```
+  from zenma.loader import load
+
+  with open("config.yaml") as rf:
+      d = load(rf)
+
