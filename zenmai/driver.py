@@ -1,5 +1,5 @@
 from dictknife import loading
-from zenmai.actions import concat
+from dictknife import deepmerge
 from zenmai.compile import compile
 from zenmai.core.context import Context
 
@@ -14,7 +14,7 @@ class Driver:
     def transform(self, d, wrap=None):
         def context_factory(*args, **kwargs):
             context = Context(*args, **kwargs)
-            context.assign("data", concat(self.data))  # xxx
+            context.assign("data", deepmerge(*self.data, override=False))  # xxx
             return context
         r = compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
         if wrap is not None:
