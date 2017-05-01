@@ -1,4 +1,5 @@
 import logging
+import copy
 from dictknife.jsonknife import get_resolver_from_filename
 from dictknife.jsonknife.accessor import StackedAccessor
 
@@ -17,7 +18,7 @@ class Loader(object):
 
     def load(self, ref, callback, format=None):
         try:
-            loaded = self.accessor.access(ref, format=format)
+            loaded = copy.deepcopy(self.accessor.access(ref, format=format))
             filename = self.accessor.resolver.filename
             logger.debug("@push load stack %s%s", " " * len(self.accessor.stack), self.accessor.resolver.rawfilename)
             return callback(filename, loaded)

@@ -32,7 +32,7 @@ testing_extras = tests_require + [
 ]
 
 setup(name='zenmai',
-      version='0.2.2',
+      version='0.2.3',
       description='toy language on yaml or json',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

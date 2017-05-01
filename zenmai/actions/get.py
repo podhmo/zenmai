@@ -11,8 +11,8 @@ def get(name, context, default=strict_default, accessor=Accessor()):
         if "#/" not in name:
             return getattr(context.scope, name)
         else:
-            name, path = name.split("#/", 2)
-            root = getattr(context.scope, name)
+            subname, path = name.split("#/", 2)
+            root = getattr(context.scope, subname)
             return accessor.access(root, path.split("/"))
     except (AttributeError, KeyError):
         if default is strict_default:
