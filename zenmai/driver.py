@@ -1,22 +1,31 @@
 from dictknife import loading
 from dictknife import deepmerge
 from zenmai.compile import compile
-from zenmai.core.context import Context
+from zenmai.core import Context, Evaluator, Loader
 
 
 class Driver:
+    evaluator_factory = Evaluator
+    loader_factory = Loader
+
     def __init__(self, module, srcfile, format=None, data=None):
         self.module = module
         self.srcfile = srcfile
         self.format = format
         self.data = data or []
 
+    def context_factory(self, *args, **kwargs):
+        context = Context(*args, **kwargs)
+        context.assign("data", deepmerge(*self.data, override=False))  # xxx
+        return context
+
     def transform(self, d, wrap=None):
-        def context_factory(*args, **kwargs):
-            context = Context(*args, **kwargs)
-            context.assign("data", deepmerge(*self.data, override=False))  # xxx
-            return context
-        r = compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
+        r = compile(
+            d, self.module, filename=self.srcfile,
+            evaluator_factory=self.evaluator_factory,
+            loader_factory=self.loader_factory,
+            context_factory=self.context_factory,
+        )
         if wrap is not None:
             r = wrap(r)
         return r

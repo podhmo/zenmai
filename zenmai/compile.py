@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
-from zenmai.core.evaluator import Evaluator
-from zenmai.core.context import Context
-from zenmai.core.loader import Loader
+from zenmai.core import Context, Evaluator, Loader
 
 
 def compile(d, module, filename=None, evaluator_factory=Evaluator, loader_factory=Loader, context_factory=Context):
