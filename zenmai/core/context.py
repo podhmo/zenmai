@@ -28,6 +28,12 @@ class Scope(object):
     def __init__(self, parent):
         self.parent = parent
 
+    @classmethod
+    def mergewith(cls, current, parent):
+        scope = cls(cls(parent))
+        scope.__dict__.update(current.__dict__)
+        return scope
+
     def __getattr__(self, name):
         return getattr(self.parent, name)
 
