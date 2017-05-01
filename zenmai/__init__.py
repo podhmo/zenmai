@@ -1,14 +1,7 @@
-from dictknife import loading
 from io import StringIO
 from zenmai.driver import Driver
 from zenmai import actions
 from zenmai.compile import compile  # NOQA
-
-
-def compilefile(module, filename, data=None, driver_factory=Driver):
-    loading.setup()
-    with open(filename) as rf:
-        return load(rf, filename=filename, data=data, driver_factory=driver_factory, module=module)
 
 
 def load(rf, filename=None, data=None, driver_factory=Driver, module=actions):
