@@ -1,18 +1,21 @@
-# -*- coding:utf-8 -*-
-from zenmai.core.evaluator import Evaluator
-from zenmai.core.context import Context
-from zenmai.core.loader import Loader
 from dictknife import loading
+from io import StringIO
+from zenmai.driver import Driver
+from zenmai import actions
+from zenmai.compile import compile  # NOQA
 
 
-def compile(d, module, filename=None, evaluator_factory=Evaluator, loader_factory=Loader, context_factory=Context):
-    evalator = evaluator_factory()
-    loader = loader_factory(d, rootfile=filename)
-    context = context_factory(module, loader, evalator, filename=filename)
-    return evalator.eval(context, d)
-
-
-def compilefile(module, filename):
+def compilefile(module, filename, data=None, driver_factory=Driver):
     loading.setup()
-    d = loading.loadfile(filename)
-    return compile(d, module, filename=filename)
+    with open(filename) as rf:
+        return load(rf, filename=filename, data=data, driver_factory=driver_factory, module=module)
+
+
+def load(rf, filename=None, data=None, driver_factory=Driver, module=actions):
+    filename = filename or getattr(rf, "name", None)
+    driver = driver_factory(module, filename, data=data)
+    return driver.transform(driver.load(rf))
+
+
+def loads(s, filename=None, data=None, driver_factory=Driver, module=actions):
+    return load(StringIO(), filename, data=data, driver_factory=driver_factory, module=module)

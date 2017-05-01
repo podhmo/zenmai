@@ -1,6 +1,7 @@
 from dictknife import loading
 from zenmai.actions import concat
-import zenmai
+from zenmai.compile import compile
+from zenmai.core.context import Context
 
 
 class Driver:
@@ -12,10 +13,10 @@ class Driver:
 
     def transform(self, d, wrap=None):
         def context_factory(*args, **kwargs):
-            context = zenmai.Context(*args, **kwargs)
+            context = Context(*args, **kwargs)
             context.assign("data", concat(self.data))  # xxx
             return context
-        r = zenmai.compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
+        r = compile(d, self.module, filename=self.srcfile, context_factory=context_factory)
         if wrap is not None:
             r = wrap(r)
         return r
