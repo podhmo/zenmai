@@ -5,9 +5,14 @@ actions
 - $concat
 - $partial
 - $get
-- $jinja2_template
 - $dynamic
+- $inherit
+- $format
+- $jinja2_template
 
 syntax
 
 - $let
+- $when
+- $unless
+- $quote
