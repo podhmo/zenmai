@@ -33,16 +33,16 @@ testing_extras = tests_require + [
 ]
 
 setup(name='zenmai',
-      version='0.2.3',
+      version='0.3.0',
       description='toy language on yaml or json',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
           "Programming Language :: Python",
           "Programming Language :: Python :: Implementation :: CPython",
       ],
-      keywords='',
+      keywords='yaml, json, toylang, minilang',
       author="podhmo",
-      author_email="",
+      author_email="ababjam61+github@gmail.com",
       url="https://github.com/podhmo/zenmai",
       packages=find_packages(exclude=["zenmai.tests"]),
       include_package_data=True,

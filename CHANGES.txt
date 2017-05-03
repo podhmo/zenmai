@@ -1,3 +1,9 @@
+0.3.0
+
+- $concat improvement
+- tiny error reporting improvement
+- changing $load's scope
+
 0.2.3
 
 - fix loader bug
