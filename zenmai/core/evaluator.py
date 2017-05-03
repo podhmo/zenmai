@@ -1,4 +1,7 @@
+import colorama
 from collections import OrderedDict
+from dictknife import pp
+from io import StringIO
 from zenmai.utils import (
     missing,
     isquoted,
@@ -6,14 +9,39 @@ from zenmai.utils import (
 )
 
 
+class EvalError(Exception):
+    def __init__(self, e, doc, where):
+        self.e = e
+        self.doc = doc
+        self.where = where
+
+    def __str__(self):
+        out = StringIO()
+        pp(self.doc, out=out)
+        return """\
+{errcolor}({self.e.__class__.__module__}.{self.e.__class__.__name__}): {self.e}{reset}
+where:
+{poscolor}{self.where}{reset}
+doc:
+{doc}""".format(self=self, doc=out.getvalue(),
+                poscolor=colorama.Fore.GREEN, errcolor=colorama.Fore.YELLOW, reset=colorama.Style.RESET_ALL)
+
+
 class Evaluator:
     def eval(self, context, d):
-        if hasattr(d, "keys"):
-            return self.eval_dict(context, d)
-        elif isinstance(d, (list, tuple)):
-            return self.eval_list(context, d)
-        else:
-            return d
+        try:
+            if hasattr(d, "keys"):
+                return self.eval_dict(context, d)
+            elif isinstance(d, (list, tuple)):
+                return self.eval_list(context, d)
+            else:
+                return d
+        except EvalError as e:
+            if e.doc is None:
+                e.doc = d
+            raise
+        except Exception as e:
+            raise EvalError(e, where=context.loader.filename, doc=d)
 
     def eval_dict(self, context, d):
         if isquoted(d):
