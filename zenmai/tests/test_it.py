@@ -431,7 +431,7 @@ class ActionsTests(DiffTestCase):
         from pathlib import Path
 
         class m:
-            from zenmai.actions import jinja2_template  # NOQA
+            from zenmai.actions import jinja2_templatefile, jinja2_template  # NOQA
             from zenmai.actions import load  # NOQA
 
         with TemporaryDirectory() as d:
@@ -440,9 +440,7 @@ class ActionsTests(DiffTestCase):
             main = textwrap.dedent("""
             $let:
               readme-template:
-                $jinja2_template:
-                  $load: ./readme.jinja2
-                  format: raw
+                $jinja2_templatefile: ./readme.jinja2
                 format: raw
             body:
               ./one.md:
@@ -457,7 +455,7 @@ class ActionsTests(DiffTestCase):
             """)
             loading.dumpfile(loading.loads(main), str(d.joinpath("./main.yaml")))
 
-            template = textwrap.dedent("""
+            template = textwrap.dedent("""\
             # {{name}}
             this is {{name}}.
             """)
@@ -467,21 +465,15 @@ class ActionsTests(DiffTestCase):
             d = self._callFUT(main, m, filename=str(d.joinpath("./main.yaml")))
             actual = loading.dumps(d)
             expected = textwrap.dedent("""
-            ./one.md: '
-
+            ./one.md: |-
               # one
-
-              this is one.'
-            ./two.md: '
-
+              this is one.
+            ./two.md: |-
               # two
-
-              this is two.'
-            ./three.md: '
-
+              this is two.
+            ./three.md: |-
               # three
-
-              this is three.'
+              this is three.
             """)
             self.assertDiff(actual.strip(), expected.strip())
 
