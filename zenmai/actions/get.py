@@ -6,7 +6,7 @@ from .dynamic import get_locals
 strict_default = object()
 
 
-class VariableResolutionError(Exception):
+class EvalVariableError(Exception):
     pass
 
 
@@ -23,9 +23,9 @@ def get(name, context, default=strict_default, accessor=Accessor()):
         if default is strict_default:
             vs = sorted(k for k in get_locals(context.scope).keys() if not k.startswith("__"))
             msg = "{e}\n accessible variables: {vs}".format(e=e, vs=vs)
-            raise VariableResolutionError(msg)
+            raise EvalVariableError(msg)
         return default
     except KeyError as e:
         if default is strict_default:
-            raise VariableResolutionError("key error: {}".format(name))
+            raise EvalVariableError("KeyError: {}".format(name))
         return default
