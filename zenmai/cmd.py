@@ -25,12 +25,12 @@ def main():
     parser.add_argument("--select", default=None)
     parser.add_argument("file", default=None)
 
-    loading.setup()  # xxx:
+    loading.setup()
     args = parser.parse_args()
 
     driver_cls_path = args.driver
     if ":" not in driver_cls_path:
-        driver_cls_path = "swagger_marshmallow_codegen.driver:{}".format(driver_cls_path)
+        driver_cls_path = "zenmai.driver:{}".format(driver_cls_path)
     driver_cls = import_symbol(driver_cls_path)
 
     module = import_module(args.module)
