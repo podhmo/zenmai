@@ -3,7 +3,7 @@ import logging
 import colorama
 from dictknife import loading
 from dictknife.jsonknife.accessor import access_by_json_pointer
-from zenmai.langhelpers import import_module, import_symbol
+from magicalimport import import_module, import_symbol
 
 
 def loadfile_with_jsonref(ref):
@@ -32,11 +32,6 @@ def main():
     loading.setup()
     args = parser.parse_args()
 
-    driver_cls_path = args.driver
-    if ":" not in driver_cls_path:
-        driver_cls_path = "zenmai.driver:{}".format(driver_cls_path)
-    driver_cls = import_symbol(driver_cls_path)
-
     module = import_module(args.module)
     data = [loadfile_with_jsonref(path) for path in args.data or []]
 
@@ -45,6 +40,7 @@ def main():
             return d
         return access_by_json_pointer(d, args.select.split("#")[-1])
 
+    driver_cls = import_symbol(args.driver, ns="zenmai.driver")
     driver = driver_cls(module, args.file, format=args.format, data=data)
 
     # todo: option

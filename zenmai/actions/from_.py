@@ -1,4 +1,4 @@
-from zenmai.langhelpers import import_module
+from magicalimport import import_module
 from zenmai.decorators import (
     with_context,
     sideeffect,
