@@ -18,7 +18,7 @@ class Loader(object):
 
     @property
     def filename(self):
-        return self.accessor.resolver.filename
+        return self.accessor.resolver.name
 
     def load(self, ref, callback=None, format=None):
         try:
