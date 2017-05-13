@@ -1,0 +1,4 @@
+#!/bin/python
+
+import zenmai.cmd
+cmd.zenmai.main()
